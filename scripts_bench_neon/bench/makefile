@@ -7,8 +7,8 @@ CFLAGS=-O3 -march=native -mcpu=neoverse-n1 -Wall -Wextra -DSUPERCOP
 
 # CFLAGS=-O3 -Wall -Wextra -DSUPERCOP
 LIBS=-lsodium
-INCLUDE_DIR=/home/gtsoulk/libsodium/test2/include
-LIB_DIR=/home/gtsoulk/libsodium/test2/lib
+INCLUDE_DIR=$(HOME)/include
+LIB_DIR=$(HOME)/lib
 FILES=bench.c
 
 # Target for generating the executable

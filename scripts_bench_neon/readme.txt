@@ -1,9 +1,10 @@
 for the libsodium
 
 ./autogen.sh -s
-./configure
-
-and remember to change the blake2b_ref in libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c to neon or reference
+automake
+mkdir builddir
+cd builddir
+../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE"
 
 make && make check
 
