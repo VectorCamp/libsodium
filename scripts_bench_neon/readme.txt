@@ -9,7 +9,8 @@ cd builddir
 make && make check
 
 #benchmark_throughput
-gcc -o benchmark benchmark.c -I $HOME/include -L $HOME/lib -lsodium && ./benchmark
+gcc -o benchmark benchmark.c -I $HOME/include -L $HOME/lib -lsodium
+LD_LIBRARY_PATH=$HOME/lib ./benchmark
 
 #bench
 make bench
