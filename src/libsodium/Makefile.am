@@ -38,6 +38,7 @@ libsodium_la_SOURCES = \
 	crypto_generichash/blake2b/ref/blake2b-load-sse2.h \
 	crypto_generichash/blake2b/ref/blake2b-load-sse41.h \
 	crypto_generichash/blake2b/ref/blake2b-load-avx2.h \
+	crypto_generichash/blake2b/ref/blake2b-load-neon.h \
 	crypto_generichash/blake2b/ref/blake2b-ref.c \
 	crypto_generichash/blake2b/ref/generichash_blake2b.c \
 	crypto_hash/crypto_hash.c \
@@ -232,6 +233,8 @@ libarmcrypto_la_LDFLAGS = $(libsodium_la_LDFLAGS)
 libarmcrypto_la_CPPFLAGS = $(libsodium_la_CPPFLAGS) \
 	@CFLAGS_ARMCRYPTO@
 libarmcrypto_la_SOURCES = \
+	crypto_generichash/blake2b/ref/blake2b-compress-neon.c \
+	crypto_generichash/blake2b/ref/blake2b-compress-neon.h \
 	crypto_aead/aegis128l/aegis128l_armcrypto.c \
 	crypto_aead/aegis128l/aegis128l_armcrypto.h \
 	crypto_aead/aegis256/aegis256_armcrypto.c \
