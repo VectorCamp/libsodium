@@ -4,13 +4,13 @@ for the libsodium
 automake
 mkdir builddir
 cd builddir
-../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE"
+../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE" --prefix=$HOME
 
 make && make check
 
 #benchmark_throughput
-gcc -o benchmark benchmark.c -I /include -L /lib -lsodium && ./benchmark
+gcc -o benchmark benchmark.c -I $HOME/include -L $HOME/lib -lsodium && ./benchmark
 
 #bench
 make bench
-sudo ./generichash_bench > generichashData.data
+sudo LD_LIBRARY_PATH=$HOME/lib ./generichash_bench > generichash_bench.data
