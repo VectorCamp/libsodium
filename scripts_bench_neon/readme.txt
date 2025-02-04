@@ -9,7 +9,6 @@ libsodium/scripts_bench_neon/Makefile.am -> libsodium/src/libsodium/Makefile.in 
 and remember to change the blake2b_ref in libsodium/src/libsodium/crypto_generichash/blake2b/ref/blake2b-ref.c to neon or reference
 
 make && make check
-sudo make install 
 
 #benchmark_throughput
 gcc -o benchmark benchmark.c -I /include -L /lib -lsodium && ./benchmark
