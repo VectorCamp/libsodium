@@ -8,6 +8,6 @@ cd builddir
 
 make && make check
 
-cd ./scripts_bench_neon
+cd ../scripts_bench_neon
 make all
 make benchmarks
