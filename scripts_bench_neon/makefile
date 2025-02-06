@@ -1,11 +1,6 @@
 CC=gcc
 
 CFLAGS=-O3 -Wall -Wextra
-# CFLAGS=-O3 -march=native -Wall -Wextra
-# # CFLAGS=-O3 -mcpu=neoverse-n1 -Wall -Wextra
-# CFLAGS=-O3  -mavx2  -Wall -Wextra
-# CFLAGS=-O3  -mssse3 -Wall -Wextra
-# CFLAGS=-O3  -msse4.1 -Wall -Wextra
 LIBS=-lsodium
 INCLUDE_DIR=$(HOME)/include
 LIB_DIR=$(HOME)/lib
