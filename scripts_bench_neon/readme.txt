@@ -6,7 +6,7 @@ automake
 mkdir builddir 
 cd builddir 
 
-to enable arch-specific optimizations you need to enable one of the following, like
+to enable arch-specific optimizations you need to enable one of the following
 
 -DAVX2_ONLY tests AVX2 
 -DSSSE3_ONLY tests SSSE3 
