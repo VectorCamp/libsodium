@@ -411,6 +411,43 @@ int
 blake2b_pick_best_implementation(void)
 {
 /* LCOV_EXCL_START */
+#ifdef AVX2_ONLY
+    #if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_TMMINTRIN_H) && \
+    defined(HAVE_SMMINTRIN_H)
+    if (sodium_runtime_has_avx2()) {
+        blake2b_compress = blake2b_compress_avx2;
+        return 0;
+    }
+#endif
+#endif
+#ifdef SSE41_ONLY
+    #if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H) && \
+    defined(HAVE_SMMINTRIN_H)
+    if (sodium_runtime_has_sse41()) {
+        blake2b_compress = blake2b_compress_sse41;
+        return 0;
+    }
+#endif
+#endif
+#ifdef SSSE3_ONLY
+    #if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H)
+    if (sodium_runtime_has_ssse3()) {
+        blake2b_compress = blake2b_compress_ssse3;
+        return 0;
+    }
+#endif
+#endif
+#ifdef NEON_ONLY
+    #if defined(__aarch64__)
+    if (sodium_runtime_has_neon()) {
+        blake2b_compress = blake2b_compress_neon;
+        return 0;
+    }
+#endif
+#endif
+blake2b_compress = blake2b_compress_ref;
+return 0;
+
 #if defined(HAVE_AVX2INTRIN_H) && defined(HAVE_TMMINTRIN_H) && \
     defined(HAVE_SMMINTRIN_H)
     if (sodium_runtime_has_avx2()) {
