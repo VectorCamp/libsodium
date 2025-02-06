@@ -1,13 +1,7 @@
 for the libsodium
 
-./autogen.sh -s
-automake
+cd libsodium
 mkdir builddir
-cd builddir
-../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE" --prefix=$HOME
+cd scripts_bench_neon
 
-make && make check
-
-cd ../scripts_bench_neon
-make all
-make benchmarks
+make libsodium_avx2 (or neon or ssse3 or sse4.1 make lib and runs benchmarks)
