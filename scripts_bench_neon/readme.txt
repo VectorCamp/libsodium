@@ -24,7 +24,7 @@ make install
 cd ./scripts_bench_neon
 make all
 
-make run_benchmarks (makes 2 files one for throughtput,time per hash and one with the cycles per byte and total cycles)
+make run_benchmarks (makes 2 files one for benchmark_throughput_timeperhash.data and one with the cycles per byte and total cycles,benchmark_cycles.data)
 
 
 
