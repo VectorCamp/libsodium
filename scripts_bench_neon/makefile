@@ -28,16 +28,17 @@ benchmarks:
 	sudo LD_LIBRARY_PATH=$(HOME)/lib ./benchmark_cycles > benchmark_cycles.data && LD_LIBRARY_PATH=$(HOME)/lib ./benchmark_throughput_timeperhash
 	
 libsodium_avx2:
-	rm -r ../builddir && cd .. && ./autogen.sh -s && automake && mkdir builddir && cd builddir && ../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DAVX2_ONLY" --prefix=$(HOME) && make && make check && make install && cd ../scripts_bench_neon && make clean && make all && make run_cycles && make run_throughput_timeperhash
+	mkdir builddir && cd builddir && ../../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DAVX2_ONLY" --prefix=$(HOME) && make && make check && make install && cd .. && make clean && make all && make run_cycles && make run_throughput_timeperhash
 libsodium_sse41:
-	rm -r ../builddir && cd .. && ./autogen.sh -s && automake && mkdir builddir && cd builddir && ../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DSSE41_ONLY" --prefix=$(HOME) && make && make check && make install && cd ../scripts_bench_neon && make clean && make all && make run_cycles && make run_throughput_timeperhash
+	mkdir builddir && cd builddir && ../../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DSSE41_ONLY" --prefix=$(HOME) && make && make check && make install && cd .. && make clean && make all && make run_cycles && make run_throughput_timeperhash
 libsodium_ssse3:
-	rm -r ../builddir && cd .. && ./autogen.sh -s && automake && mkdir builddir && cd builddir && ../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DSSSE3_ONLY" --prefix=$(HOME) && make && make check && make install && cd ../scripts_bench_neon && make clean && make all && make run_cycles && make run_throughput_timeperhash
+	mkdir builddir && cd builddir && ../../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DSSSE3_ONLY" --prefix=$(HOME) && make && make check && make install && cd .. && make clean && make all && make run_cycles && make run_throughput_timeperhash
 libsodium_neon:
-	rm -r ../builddir && cd .. && ./autogen.sh -s && automake && mkdir builddir && cd builddir && ../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DNEON_ONLY" --prefix=$(HOME) && make && make check && make install && cd ../scripts_bench_neon && make clean && make all && make run_cycles && make run_throughput_timeperhash
+	mkdir builddir && cd builddir && ../../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3 -DNEON_ONLY" --prefix=$(HOME) && make && make check && make install && cd .. && make clean && make all && make run_cycles && make run_throughput_timeperhash
 libsodium_ref:
-	rm -r ../builddir && cd .. && ./autogen.sh -s && automake && mkdir builddir && cd builddir && ../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3" --prefix=$(HOME) && make && make check && make install && cd ../scripts_bench_neon && make clean && make all && make run_cycles && make run_throughput_timeperhash
+	mkdir builddir && cd builddir && ../../configure CFLAGS="-DDEV_MODE" CPPFLAGS="-DDEV_MODE -O3" --prefix=$(HOME) && make && make check && make install && cd .. && make clean && make all && make run_cycles && make run_throughput_timeperhash
 
 # Clean up generated files
+
 clean:
 	rm -f benchmark_cycles benchmark_cycles.data benchmark_throughput_timeperhash benchmark_throughput_timeperhash.data
