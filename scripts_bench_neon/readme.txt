@@ -14,8 +14,8 @@ to enable arch-specific optimizations you need to enable one of the following
 -DNEON_ONLY tests NEON
 ommitting this will fallback to C implementation
 
-AVX2 for example tests this
-../configure CFLAGS="-DDEV_MODE -O3 -DAVX2_ONLY" CPPFLAGS="-DDEV_MODE -O3 -DAVX2_ONLY" --prefix=$HOME
+ΝΕΟΝ for example tests this
+../configure CFLAGS="-DDEV_MODE -O3 -DNEON_ONLY" CPPFLAGS="-DDEV_MODE -O3 -DNEON_ONLY" --prefix=$HOME
 
 
 make && make check 
