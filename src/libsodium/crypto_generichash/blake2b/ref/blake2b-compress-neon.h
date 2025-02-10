@@ -17,14 +17,6 @@
 
 #define vrorq_n_u64_32(x) vreinterpretq_u64_u32(vrev64q_u32(vreinterpretq_u32_u64((x))))
 
-#define vrorq_n_u64_24(x) vcombine_u64( \
-      vreinterpret_u64_u8(vext_u8(vreinterpret_u8_u64(vget_low_u64(x)), vreinterpret_u8_u64(vget_low_u64(x)), 3)), \
-      vreinterpret_u64_u8(vext_u8(vreinterpret_u8_u64(vget_high_u64(x)), vreinterpret_u8_u64(vget_high_u64(x)), 3)))
-
-#define vrorq_n_u64_16(x) vcombine_u64( \
-      vreinterpret_u64_u8(vext_u8(vreinterpret_u8_u64(vget_low_u64(x)), vreinterpret_u8_u64(vget_low_u64(x)), 2)), \
-      vreinterpret_u64_u8(vext_u8(vreinterpret_u8_u64(vget_high_u64(x)), vreinterpret_u8_u64(vget_high_u64(x)), 2)))
-
 #define vrorq_n_u64_63(x) veorq_u64(vaddq_u64(x, x), vshrq_n_u64(x, 63))
 
 #define G1(row1l,row2l,row3l,row4l,row1h,row2h,row3h,row4h,b0,b1) \
@@ -34,13 +26,15 @@
   row4l = vrorq_n_u64_32(row4l); row4h = vrorq_n_u64_32(row4h); \
   row3l = vaddq_u64(row3l, row4l); row3h = vaddq_u64(row3h, row4h); \
   row2l = veorq_u64(row2l, row3l); row2h = veorq_u64(row2h, row3h); \
-  row2l = vrorq_n_u64_24(row2l); row2h = vrorq_n_u64_24(row2h);
-
+  row2l = vreinterpretq_u64_s8(vqtbl1q_s8(vreinterpretq_s8_u64(row2l), (uint8x16_t)btranslatedr24)); \
+  row2h = vreinterpretq_u64_s8(vqtbl1q_s8(vreinterpretq_s8_u64(row2h), (uint8x16_t)btranslatedr24));
+  
 #define G2(row1l,row2l,row3l,row4l,row1h,row2h,row3h,row4h,b0,b1) \
   row1l = vaddq_u64(vaddq_u64(row1l, b0), row2l); \
   row1h = vaddq_u64(vaddq_u64(row1h, b1), row2h); \
   row4l = veorq_u64(row4l, row1l); row4h = veorq_u64(row4h, row1h); \
-  row4l = vrorq_n_u64_16(row4l); row4h = vrorq_n_u64_16(row4h); \
+  row4l = vreinterpretq_u64_s8(vqtbl1q_s8(vreinterpretq_s8_u64(row4l), (uint8x16_t)btranslatedr16)); \
+  row4h = vreinterpretq_u64_s8(vqtbl1q_s8(vreinterpretq_s8_u64(row4h), (uint8x16_t)btranslatedr16)); \
   row3l = vaddq_u64(row3l, row4l); row3h = vaddq_u64(row3h, row4h); \
   row2l = veorq_u64(row2l, row3l); row2h = veorq_u64(row2h, row3h); \
   row2l = vrorq_n_u64_63(row2l); row2h = vrorq_n_u64_63(row2h);
