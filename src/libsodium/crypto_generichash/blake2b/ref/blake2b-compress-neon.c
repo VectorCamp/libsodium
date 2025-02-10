@@ -42,12 +42,8 @@ blake2b_compress_neon(blake2b_state *S,
     uint64x2_t    row4l, row4h;
     uint64x2_t    b0, b1;
     uint64x2_t    t0, t1;
-    static int8_t r16_data[16] = {2, 3, 4, 5, 6, 7, 0, 1, 10, 11, 12, 13, 14, 15, 8, 9};
-    static int8_t r24_data[16] = {3, 4, 5, 6, 7, 0, 1, 2, 11, 12, 13, 14, 15, 8, 9, 10};
-    const uint64x2_t r16=vreinterpretq_u64_s8(vld1q_s8(r16_data));
-    const uint64x2_t r24=vreinterpretq_u64_s8(vld1q_s8(r24_data));
-    int8x16_t btranslatedr24 = vandq_s8((int8x16_t)r24,vdupq_n_s8(0x8f));
-    int8x16_t btranslatedr16 = vandq_s8((int8x16_t)r16,vdupq_n_s8(0x8f));
+    static int8x16_t r16 = {2, 3, 4, 5, 6, 7, 0, 1, 10, 11, 12, 13, 14, 15, 8, 9};
+    static int8x16_t r24 = {3, 4, 5, 6, 7, 0, 1, 2, 11, 12, 13, 14, 15, 8, 9, 10};
 
     const uint64x2_t m0 = vreinterpretq_u64_u8(vld1q_u8(block + 00));
     const uint64x2_t m1 = vreinterpretq_u64_u8(vld1q_u8(block + 16));
