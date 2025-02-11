@@ -32,6 +32,9 @@ static const uint64_t blake2b_IV[8] = {
     0x1f83d9abfb41bd6bULL, 0x5be0cd19137e2179ULL
 };
 
+static const uint8_t r16_data[] = {2, 3, 4, 5, 6, 7, 0, 1, 10, 11, 12, 13, 14, 15, 8, 9};
+static const uint8_t r24_data[] = {3, 4, 5, 6, 7, 0, 1, 2, 11, 12, 13, 14, 15, 8, 9, 10};
+
 int
 blake2b_compress_neon(blake2b_state *S,
                       const uint8_t  block[BLAKE2B_BLOCKBYTES])
@@ -42,9 +45,10 @@ blake2b_compress_neon(blake2b_state *S,
     uint64x2_t    row4l, row4h;
     uint64x2_t    b0, b1;
     uint64x2_t    t0, t1, t2, t3;
-    static int8x16_t r16 = {2, 3, 4, 5, 6, 7, 0, 1, 10, 11, 12, 13, 14, 15, 8, 9};
-    static int8x16_t r24 = {3, 4, 5, 6, 7, 0, 1, 2, 11, 12, 13, 14, 15, 8, 9, 10};
+    const uint8x16_t r16 = vld1q_u8(r16_data);
+    const uint8x16_t r24 = vld1q_u8(r24_data);
 
+    __asm__("load_m0_7_label:;"::);
     const uint64x2_t m0 = vreinterpretq_u64_u8(vld1q_u8(block + 00));
     const uint64x2_t m1 = vreinterpretq_u64_u8(vld1q_u8(block + 16));
     const uint64x2_t m2 = vreinterpretq_u64_u8(vld1q_u8(block + 32));
@@ -54,88 +58,13 @@ blake2b_compress_neon(blake2b_state *S,
     const uint64x2_t m6 = vreinterpretq_u64_u8(vld1q_u8(block + 96));
     const uint64x2_t m7 = vreinterpretq_u64_u8(vld1q_u8(block + 112));
 
-    __asm__("label1_m:;"::);
-    // Full triplets
-    const uint64x2_t m2_lo_m3_lo = M_LO_LO(2, 3);
-    const uint64x2_t m2_hi_m3_hi = M_HI_HI(2, 3);
-    const uint64x2_t m2_lo_m3_hi = M_LO_HI(2, 3);
-
-    __asm__("label2_m:;"::);
-    // Same lo/hi pairs
-    const uint64x2_t m0_lo_m1_lo = M_LO_LO(0, 1);
-    const uint64x2_t m0_hi_m1_hi = M_HI_HI(0, 1);
-    const uint64x2_t m0_lo_m4_lo = M_LO_LO(0, 4);
-    const uint64x2_t m0_hi_m4_hi = M_HI_HI(0, 4);
-    const uint64x2_t m4_lo_m0_lo = M_LO_LO(4, 0);
-    const uint64x2_t m4_hi_m0_hi = M_HI_HI(4, 0);
-    const uint64x2_t m4_lo_m5_lo = M_LO_LO(4, 5);
-    const uint64x2_t m4_hi_m5_hi = M_HI_HI(4, 5);
-    const uint64x2_t m6_lo_m5_lo = M_LO_LO(6, 5);
-    const uint64x2_t m6_hi_m5_hi = M_HI_HI(6, 5);
-    const uint64x2_t m6_lo_m7_lo = M_LO_LO(6, 7);
-    const uint64x2_t m6_hi_m7_hi = M_HI_HI(6, 7);
-
-    __asm__("label3_m:;"::);
-    // Unique lo pairs
-    const uint64x2_t m0_lo_m2_lo = M_LO_LO(0, 2);
-    const uint64x2_t m3_lo_m5_lo = M_LO_LO(3, 5);
-    const uint64x2_t m3_lo_m7_lo = M_LO_LO(3, 7);
-    const uint64x2_t m4_lo_m1_lo = M_LO_LO(4, 1);
-    const uint64x2_t m5_lo_m4_lo = M_LO_LO(5, 4);
-    const uint64x2_t m7_lo_m2_lo = M_LO_LO(7, 2);
-    const uint64x2_t m7_lo_m3_lo = M_LO_LO(7, 3);
-
-    __asm__("label4_m:;"::);
-    // Unique hi pairs
-    const uint64x2_t m3_hi_m0_hi = M_HI_HI(3, 0);
-    const uint64x2_t m3_hi_m4_hi = M_HI_HI(3, 4);
-    const uint64x2_t m4_hi_m2_hi = M_HI_HI(4, 2);
-    const uint64x2_t m5_hi_m2_hi = M_HI_HI(5, 2);
-    const uint64x2_t m6_hi_m2_hi = M_HI_HI(6, 2);
-    const uint64x2_t m6_hi_m3_hi = M_HI_HI(6, 3);
-    const uint64x2_t m7_hi_m0_hi = M_HI_HI(7, 0);
-
-    __asm__("label5_m:;"::);
-    // Same lo/hi+lo pairs
-    const uint64x2_t m0_lo_m3_hi = M_LO_HI(0, 3);
-    const uint64x2_t m0_lo_m3_lo = M_LO_LO(0, 3);
-    const uint64x2_t m1_lo_m2_hi = M_LO_HI(1, 2);
-    const uint64x2_t m1_lo_m2_lo = M_LO_LO(1, 2);
-    const uint64x2_t m1_lo_m3_lo = M_LO_LO(1, 3);
-    const uint64x2_t m1_lo_m3_hi = M_LO_HI(1, 3);
-    const uint64x2_t m1_lo_m5_lo = M_LO_LO(1, 5);
-    const uint64x2_t m1_lo_m5_hi = M_LO_HI(1, 5);
-    const uint64x2_t m6_lo_m0_lo = M_LO_LO(6, 0);
-    const uint64x2_t m6_lo_m0_hi = M_LO_HI(6, 0);
-    const uint64x2_t m6_lo_m1_lo = M_LO_LO(6, 1);
-    const uint64x2_t m6_lo_m1_hi = M_LO_HI(6, 1);
-
-    __asm__("label6_m:;"::);
-    // Same lo/hi+hi pairs
-    const uint64x2_t m1_lo_m6_hi = M_LO_HI(1, 6);
-    const uint64x2_t m1_hi_m6_hi = M_HI_HI(1, 6);
-    const uint64x2_t m2_lo_m7_hi = M_LO_HI(2, 7);
-    const uint64x2_t m2_hi_m7_hi = M_HI_HI(2, 7);
-    const uint64x2_t m3_lo_m1_hi = M_LO_HI(3, 1);
-    const uint64x2_t m3_hi_m1_hi = M_HI_HI(3, 1);
-    const uint64x2_t m4_lo_m6_hi = M_LO_HI(4, 6);
-    const uint64x2_t m4_hi_m6_hi = M_HI_HI(4, 6);
-    const uint64x2_t m5_lo_m1_hi = M_LO_HI(5, 1);
-    const uint64x2_t m5_hi_m1_hi = M_HI_HI(5, 1);
-    const uint64x2_t m7_lo_m4_hi = M_LO_HI(7, 4);
-    const uint64x2_t m7_hi_m4_hi = M_HI_HI(7, 4);
-
-    __asm__("label7_m:;"::);
-    // Unique lo/hi pairs
-    const uint64x2_t m3_lo_m2_hi = M_LO_HI(3, 2);
-    const uint64x2_t m7_lo_m5_hi = M_LO_HI(7, 5);
-
-    __asm__("label8_m:;"::);
+    __asm__("load_row12_label:;"::);
     const uint64x2_t h0 = row1l = vld1q_u64(&S->h[0]);
     const uint64x2_t h1 = row1h = vld1q_u64(&S->h[2]);
     const uint64x2_t h2 = row2l = vld1q_u64(&S->h[4]);
     const uint64x2_t h3 = row2h = vld1q_u64(&S->h[6]);
 
+    __asm__("load_row34_label:;"::);
     row3l = vld1q_u64(&blake2b_IV[0]);
     row3h = vld1q_u64(&blake2b_IV[2]);
     row4l = veorq_u64(vld1q_u64(&blake2b_IV[4]), vld1q_u64(&S->t[0]));
@@ -143,24 +72,34 @@ blake2b_compress_neon(blake2b_state *S,
 
     __asm__("round0_label:;"::);
     ROUND(0);
+
     __asm__("round1_label:;"::);
     ROUND(1);
+
     __asm__("round2_label:;"::);
     ROUND(2);
+
     __asm__("round3_label:;"::);
     ROUND(3);
+
     __asm__("round4_label:;"::);
     ROUND(4);
+
     __asm__("round5_label:;"::);
     ROUND(5);
+
     __asm__("round6_label:;"::);
     ROUND(6);
+
     __asm__("round7_label:;"::);
     ROUND(7);
+
     __asm__("round8_label:;"::);
     ROUND(8);
+
     __asm__("round9_label:;"::);
     ROUND(9);
+
     __asm__("round10_label:;"::);
     ROUND(0); // Round 10 is identical to Round 0
     __asm__("round11_label:;"::);
