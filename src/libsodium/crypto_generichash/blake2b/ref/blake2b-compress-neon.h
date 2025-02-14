@@ -19,7 +19,7 @@
 #define vrorq_n_u64_24(x) vreinterpretq_u64_s8(vqtbl1q_s8(vreinterpretq_s8_u64(x), (uint8x16_t)r24))
 #define vrorq_n_u64_32(x) vreinterpretq_u64_u32(vrev64q_u32(vreinterpretq_u32_u64((x))))
 
-#define vrorq_n_u64_63(x) veorq_u64(vaddq_u64(x, x), vshrq_n_u64(x, 63))
+#define vrorq_n_u64_63(x) vsliq_n_u64(vshrq_n_u64(x, 63), x, 1)
 
 #define G1(row1l,row2l,row3l,row4l,row1h,row2h,row3h,row4h,b0,b1) \
   row1l = vaddq_u64(vaddq_u64(row1l, b0), row2l); \
