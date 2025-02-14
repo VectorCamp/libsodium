@@ -22,24 +22,131 @@
 #define vrorq_n_u64_63(x) vsliq_n_u64(vshrq_n_u64(x, 63), x, 1)
 
 #define G1(row1l,row2l,row3l,row4l,row1h,row2h,row3h,row4h,b0,b1) \
-  row1l = vaddq_u64(vaddq_u64(row1l, b0), row2l); \
-  row1h = vaddq_u64(vaddq_u64(row1h, b1), row2h); \
-  row4l = veorq_u64(row4l, row1l); row4h = veorq_u64(row4h, row1h); \
-  row4l = vrorq_n_u64_32(row4l); row4h = vrorq_n_u64_32(row4h); \
-  row3l = vaddq_u64(row3l, row4l); row3h = vaddq_u64(row3h, row4h); \
-  row2l = veorq_u64(row2l, row3l); row2h = veorq_u64(row2h, row3h); \
-  row2l = vrorq_n_u64_24(row2l); \
-  row2h = vrorq_n_u64_24(row2h);
+do {\
+  __asm__ volatile (                                          \
+      "add %0.2d, %0.2d, %1.2d\n\t"  /* dest = dest + a */   \
+      "add %0.2d, %0.2d, %2.2d\n\t"  /* dest = dest + b */   \
+      : "+w" (row1l)                                          \
+      : "w" (b0), "w" (row2l)                                     \
+  );                                                          \
+  __asm__ volatile (                                          \
+    "add %0.2d, %0.2d, %1.2d\n\t"  /* dest = dest + a */   \
+    "add %0.2d, %0.2d, %2.2d\n\t"  /* dest = dest + b */   \
+    : "+w" (row1h)                                          \
+    : "w" (b1), "w" (row2h)                                     \
+  );                                                          \
+  __asm__ volatile (                                               \
+    "eor %0.16b, %0.16b, %1.16b\n"                                \
+    : "+w" (row4l)                                               \
+    : "w" (row1l)                                                 \
+  );                                                               \
+  __asm__ volatile (                                               \
+    "eor %0.16b, %0.16b, %1.16b\n"                                \
+    : "+w" (row4h)                                               \
+    : "w" (row1h)                                                 \
+  );                                                               \
+  __asm__ volatile (                                             \
+    "rev64 %0.4s, %0.4s\n"                                      \
+    : "+w" (row4l)                                                \
+    :                                                         \
+  );                                                             \
+  __asm__ volatile (                                             \
+    "rev64 %0.4s, %0.4s\n"                                      \
+    : "+w" (row4h)                                                \
+    :                                                         \
+  );                                                             \
+  __asm__ volatile (                                                   \
+    "add %0.2d, %0.2d, %2.2d\n\t" /* dest_l = dest_l + src_l */       \
+    "add %1.2d, %1.2d, %3.2d\n\t" /* dest_h = dest_h + src_h */       \
+    : "+w" (row3l), "+w" (row3h)                                   \
+    : "w" (row4l), "w" (row4h)                                       \
+  );                                                                   \
+  __asm__ volatile (                                                   \
+    "eor %0.16b, %0.16b, %2.16b\n\t"  /* dest_l = dest_l XOR src_l */  \
+    "eor %1.16b, %1.16b, %3.16b\n\t"  /* dest_h = dest_h XOR src_h */  \
+    : "+w" (row2l), "+w" (row2h)                                  \
+    : "w" (row3l), "w" (row3h)                                      \
+  );                                                                   \
+  __asm__ volatile (                                                \
+    "tbl %0.16b, {%0.16b}, %1.16b\n"                                \
+    : "+w" (row2l)                                                 \
+    : "w" (r24)                                                    \
+  );                                                                 \
+  __asm__ volatile (                                                \
+    "tbl %0.16b, {%0.16b}, %1.16b\n"                                \
+    : "+w" (row2h)                                                 \
+    : "w" (r24)                                                    \
+  );                                                                 \
+} while(0)
   
 #define G2(row1l,row2l,row3l,row4l,row1h,row2h,row3h,row4h,b0,b1) \
-  row1l = vaddq_u64(vaddq_u64(row1l, b0), row2l); \
-  row1h = vaddq_u64(vaddq_u64(row1h, b1), row2h); \
-  row4l = veorq_u64(row4l, row1l); row4h = veorq_u64(row4h, row1h); \
-  row4l = vrorq_n_u64_16(row4l); \
-  row4h = vrorq_n_u64_16(row4h); \
-  row3l = vaddq_u64(row3l, row4l); row3h = vaddq_u64(row3h, row4h); \
-  row2l = veorq_u64(row2l, row3l); row2h = veorq_u64(row2h, row3h); \
-  row2l = vrorq_n_u64_63(row2l); row2h = vrorq_n_u64_63(row2h);
+  __asm__ volatile (                                          \
+    "add %0.2d, %0.2d, %1.2d\n\t"  /* dest = dest + a */   \
+    "add %0.2d, %0.2d, %2.2d\n\t"  /* dest = dest + b */   \
+    : "+w" (row1l)                                          \
+    : "w" (b0), "w" (row2l)                                     \
+  );                                                          \
+  __asm__ volatile (                                          \
+  "add %0.2d, %0.2d, %1.2d\n\t"  /* dest = dest + a */   \
+  "add %0.2d, %0.2d, %2.2d\n\t"  /* dest = dest + b */   \
+  : "+w" (row1h)                                          \
+  : "w" (b1), "w" (row2h)                                     \
+  );                                                          \
+  __asm__ volatile (                                               \
+    "eor %0.16b, %0.16b, %1.16b\n"                                \
+    : "+w" (row4l)                                               \
+    : "w" (row1l)                                                 \
+  );                                                               \
+  __asm__ volatile (                                               \
+    "eor %0.16b, %0.16b, %1.16b\n"                                \
+    : "+w" (row4h)                                               \
+    : "w" (row1h)                                                 \
+  );                                                               \
+  __asm__ volatile (                                                \
+    "tbl %0.16b, {%0.16b}, %1.16b\n"                                \
+    : "+w" (row4l)                                                 \
+    : "w" (r16)                                                    \
+  );                                                                 \
+  __asm__ volatile (                                                \
+    "tbl %0.16b, {%0.16b}, %1.16b\n"                                \
+    : "+w" (row4h)                                                 \
+    : "w" (r16)                                                    \
+  );                                                                 \
+  __asm__ volatile (                                                   \
+    "add %0.2d, %0.2d, %2.2d\n\t" /* dest_l = dest_l + src_l */       \
+    "add %1.2d, %1.2d, %3.2d\n\t" /* dest_h = dest_h + src_h */       \
+    : "+w" (row3l), "+w" (row3h)                                   \
+    : "w" (row4l), "w" (row4h)                                       \
+  );                                                                   \
+  __asm__ volatile (                                                   \
+    "eor %0.16b, %0.16b, %2.16b\n\t"  /* dest_l = dest_l XOR src_l */  \
+    "eor %1.16b, %1.16b, %3.16b\n\t"  /* dest_h = dest_h XOR src_h */  \
+    : "+w" (row2l), "+w" (row2h)                                  \
+    : "w" (row3l), "w" (row3h)                                      \
+  );                                                                   \
+  __asm__ volatile (                                       \
+    "ushr %0.2d, %1.2d, #63\n\t"                       \
+    : "+w" (t0)                                       \
+    : "w" (row2l)                    \
+  );                                  \
+  __asm__ volatile ( \
+    "sli %0.2d, %1.2d, #1\n\t" \
+    : "+w" (t0)    \
+    : "w" (row2l)  \
+  );  \
+  row2l = t0; \
+  __asm__ volatile (                                       \
+    "ushr %0.2d, %1.2d, #63\n\t"                       \
+    : "+w" (t1)                                       \
+    : "w" (row2h)                    \
+  );                                  \
+  __asm__ volatile ( \
+    "sli %0.2d, %1.2d, #1\n\t" \
+    : "+w" (t1)    \
+    : "w" (row2h)  \
+  );  \
+  row2h = t1;
+  
 
 #define DIAGONALIZE(row1l,row2l,row3l,row4l,row1h,row2h,row3h,row4h) \
     t0 = vextq_u64(row2l, row2h, 1); \
