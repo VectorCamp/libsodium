@@ -418,7 +418,7 @@ blake2b_pick_best_implementation(void)
         blake2b_compress = blake2b_compress_avx2;
         return 0;
     }
-#endif
+    #endif
 #endif
 #ifdef SSE41_ONLY
     #if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H) && \
@@ -427,7 +427,7 @@ blake2b_pick_best_implementation(void)
         blake2b_compress = blake2b_compress_sse41;
         return 0;
     }
-#endif
+    #endif
 #endif
 #ifdef SSSE3_ONLY
     #if defined(HAVE_EMMINTRIN_H) && defined(HAVE_TMMINTRIN_H)
@@ -435,7 +435,7 @@ blake2b_pick_best_implementation(void)
         blake2b_compress = blake2b_compress_ssse3;
         return 0;
     }
-#endif
+    #endif
 #endif
 #ifdef NEON_ONLY
     #if defined(__aarch64__)
@@ -443,7 +443,15 @@ blake2b_pick_best_implementation(void)
         blake2b_compress = blake2b_compress_neon;
         return 0;
     }
+    #endif
 #endif
+#ifdef NEON_ASM_ONLY
+    #if defined(__aarch64__)
+    if (sodium_runtime_has_neon()) {
+        blake2b_compress = blake2b_compress_neon_assembly;
+        return 0;
+    }
+    #endif
 #endif
 blake2b_compress = blake2b_compress_ref;
 return 0;

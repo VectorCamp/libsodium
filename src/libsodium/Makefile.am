@@ -233,6 +233,7 @@ libarmcrypto_la_LDFLAGS = $(libsodium_la_LDFLAGS)
 libarmcrypto_la_CPPFLAGS = $(libsodium_la_CPPFLAGS) \
 	@CFLAGS_ARMCRYPTO@
 libarmcrypto_la_SOURCES = \
+	crypto_generichash/blake2b/ref/blake2b-compress-neon-assembly.S \
 	crypto_generichash/blake2b/ref/blake2b-compress-neon.c \
 	crypto_generichash/blake2b/ref/blake2b-compress-neon.h \
 	crypto_aead/aegis128l/aegis128l_armcrypto.c \
